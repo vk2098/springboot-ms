@@ -1,5 +1,6 @@
 package com.microservices.student.service;
 import com.microservices.student.entity.Student;
+import com.microservices.student.feignclients.FeinClient;
 import com.microservices.student.repository.StudentRepository;
 import com.microservices.student.request.CreateStudentRequest;
 import com.microservices.student.response.AddressResponse;
@@ -13,6 +14,9 @@ public class StudentService {
     StudentRepository studentRepository;
     @Autowired
     WebClient webClient;
+
+    @Autowired
+    FeinClient feinClient;
     public StudentResponse createStudent(CreateStudentRequest createStudentRequest) {
         Student student = new Student();
         student.setFirstName(createStudentRequest.getFirstName());
@@ -21,8 +25,10 @@ public class StudentService {
         student.setAddressId(createStudentRequest.getAddressId());
         student = studentRepository.save(student);
         StudentResponse studentResponse=new StudentResponse(student);
-        studentResponse.setAddressResponse(getAddressResponse(student.getAddressId()));
+//        studentResponse.setAddressResponse(getAddressResponse(student.getAddressId()));
+        studentResponse.setAddressResponse(feinClient.getById(student.getId()));
         return  studentResponse;
+
     }
     private AddressResponse getAddressResponse(Long addressId) {
        AddressResponse addressResponse= webClient.get().uri("/getById/"+addressId)
@@ -32,7 +38,8 @@ public class StudentService {
     public StudentResponse getById (long id) {
         Student student= studentRepository.getById(id);
         StudentResponse studentResponse=new StudentResponse(student);
-        studentResponse.setAddressResponse(getAddressResponse(student.getAddressId()));
+//        studentResponse.setAddressResponse(getAddressResponse(student.getAddressId()));
+        studentResponse.setAddressResponse(feinClient.getById(student.getId()));
         return  studentResponse;
     }
 }
