@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@LoadBalancerClient(value = "ADDRESS")
+@LoadBalancerClient(value = "ADDRESS-SERVICE")
 public class LoadBalancer {
     @Bean
     @LoadBalanced
