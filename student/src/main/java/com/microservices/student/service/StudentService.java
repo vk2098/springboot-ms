@@ -1,4 +1,5 @@
 package com.microservices.student.service;
+import com.microservices.student.Common.CommonService;
 import com.microservices.student.entity.Student;
 import com.microservices.student.feignclients.FeinClient;
 import com.microservices.student.repository.StudentRepository;
@@ -16,6 +17,9 @@ public class StudentService {
     WebClient webClient;
 
     @Autowired
+    CommonService commonService;
+
+    @Autowired
     FeinClient feinClient;
     public StudentResponse createStudent(CreateStudentRequest createStudentRequest) {
         Student student = new Student();
@@ -26,20 +30,25 @@ public class StudentService {
         student = studentRepository.save(student);
         StudentResponse studentResponse=new StudentResponse(student);
 //        studentResponse.setAddressResponse(getAddressResponse(student.getAddressId()));
-        studentResponse.setAddressResponse(feinClient.getById(student.getId()));
+        studentResponse.setAddressResponse(commonService.getAddressResponse(student.getId()));
         return  studentResponse;
 
     }
-    private AddressResponse getAddressResponse(Long addressId) {
-       AddressResponse addressResponse= webClient.get().uri("/getById/"+addressId)
-               .retrieve().bodyToMono(AddressResponse.class).block();
-       return addressResponse;
-    }
+//    private AddressResponse getAddressResponse(Long addressId) {
+//       AddressResponse addressResponse= webClient.get().uri("/getById/"+addressId)
+//               .retrieve().bodyToMono(AddressResponse.class).block();
+//       return addressResponse;
+//    }
+
+//    private AddressResponse getAddressResponse(Long addressId) {
+//        AddressResponse addressResponse= feinClient.getById(addressId);
+//        return addressResponse;
+//    }
     public StudentResponse getById (long id) {
         Student student= studentRepository.getById(id);
         StudentResponse studentResponse=new StudentResponse(student);
 //        studentResponse.setAddressResponse(getAddressResponse(student.getAddressId()));
-        studentResponse.setAddressResponse(feinClient.getById(student.getId()));
+        studentResponse.setAddressResponse(commonService.getAddressResponse(student.getId()));
         return  studentResponse;
     }
 }
